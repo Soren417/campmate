@@ -1,4 +1,6 @@
 name = input("你叫什么名字？")
 age = int(input("你几岁？"))
-print("你好，", name)
+school = input("你在哪个学校？")
+print("学校:",school)
+print(name, age, "岁", "来自", school)
 print("你明年", age + 1, "岁")
