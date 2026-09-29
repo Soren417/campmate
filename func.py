@@ -1,6 +1,6 @@
 def calc_avg(a, b, c):
     return (a + b + c) / 3
-print(calc_avg(80, 90,100))
+print(calc_avg(80, 90, 100))
 def get_average(n):
     total = 0
     for i in range(1, n + 1):
