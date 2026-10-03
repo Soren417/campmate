@@ -1,0 +1,12 @@
+[
+    {
+        "name": "高等数学",
+        "credits": 4,
+        "grade": 88
+    },
+    {
+        "name": "C语言",
+        "credits": 3,
+        "grade": 92
+    }
+]
