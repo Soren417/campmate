@@ -12,7 +12,13 @@ def show_courses(courses):
     print(f"📚 当前课表（共 {len(courses)} 门）：")
     for i, c in enumerate(courses, 1):
            grade = c.get("grade", "未录入")
-           print(f"  {i}. {c['name']} —— {c['credits']} 学分，{grade} 分")  
+           print(f"  {i}. {c['name']} —— {c['credits']} 学分，{grade} 分") 
+
+def save_courses(courses):
+    """保存课表到文件"""
+    with open(DATA_FILE, "w", encoding="utf-8") as f:
+        json.dump(courses, f, ensure_ascii=False, indent=4)
+
 
 if os.path.exists(DATA_FILE):
     with open(DATA_FILE, "r", encoding="utf-8") as f :
@@ -44,11 +50,9 @@ while True:
         grade = int(input("成绩："))
 
         courses.append({"name": name, "credits": credit, "grade": grade})
-
-        with open(DATA_FILE, "w", encoding="utf-8") as f:
-            json.dump(courses, f, ensure_ascii=False, indent=4)
-
+        save_courses(courses)
         print(f"✅ 已添加：{name}  {credit} 学分）")
+    
     if choice == "3":
         if len(courses) == 0:
             print("课表是空的，没有可删的课")
@@ -58,8 +62,7 @@ while True:
            if 1 <= num <= len(courses):
                 removed = courses.pop(num - 1)
                 print(f"🗑️ 已删除：{removed['name']}")
-
-                with open(DATA_FILE, "w", encoding="utf-8") as f:
-                    json.dump(courses, f, ensure_ascii=False, indent=4)
+                save_courses(courses)
+                
            else:
                 print("❌ 编号不存在") 
