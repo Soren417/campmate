@@ -1,8 +1,21 @@
 import json
 import os
 
-if os.path.exists("my_courses.json"):
-    with open("my_courses.json", "r", encoding="utf-8") as f :
+DATA_FILE = "my_courses.json"
+
+def show_courses(courses):
+    """打印课表"""
+    if len(courses) == 0:
+        print("课表是空的")
+        return
+
+    print(f"📚 当前课表（共 {len(courses)} 门）：")
+    for i, c in enumerate(courses, 1):
+           grade = c.get("grade", "未录入")
+           print(f"  {i}. {c['name']} —— {c['credits']} 学分，{grade} 分")  
+
+if os.path.exists(DATA_FILE):
+    with open(DATA_FILE, "r", encoding="utf-8") as f :
         courses = json.load(f)
 
 else:
@@ -23,37 +36,30 @@ while True:
         print("再见！")
         break
     if choice == "1":
-        if len(courses) == 0:
-            print("课表是空的，去添加几门课吧")
-        else:
-            print(f"📚 当前课表（共 {len(courses)} 门）：")
-            for i, c in enumerate(courses, 1):
-                print(f"  {i}. {c['name']} —— {c['credits']} 学分")
+        show_courses(courses)
+
     if choice == "2":
         name = input("课程名称：")
         credit = int(input("学分："))
+        grade = int(input("成绩："))
 
-        courses.append({"name": name, "credits": credit})
+        courses.append({"name": name, "credits": credit, "grade": grade})
 
-        with open("my_courses.josn", "w", encoding="utf-8") as f:
+        with open(DATA_FILE, "w", encoding="utf-8") as f:
             json.dump(courses, f, ensure_ascii=False, indent=4)
 
-        print(f"✅ 已添加：{name}（{credit} 学分）")
+        print(f"✅ 已添加：{name}  {credit} 学分）")
     if choice == "3":
         if len(courses) == 0:
             print("课表是空的，没有可删的课")
         else:
-            print("📚 当前课表：")
-            for i, c in enumerate(courses, 1):
-                print(f"  {i}. {c['name']} —— {c['credits']} 学分")
-
-            num = int(input("请输入要删除的编号："))
-
-            if 1 <= num <= len(courses):
+           show_courses(courses)
+           num = int(input("请输入要删除的编号："))
+           if 1 <= num <= len(courses):
                 removed = courses.pop(num - 1)
                 print(f"🗑️ 已删除：{removed['name']}")
 
-                with open("my_courses.json", "w", encoding="utf-8") as f:
+                with open(DATA_FILE, "w", encoding="utf-8") as f:
                     json.dump(courses, f, ensure_ascii=False, indent=4)
-            else:
-                print("❌ 编号不存在")
+           else:
+                print("❌ 编号不存在") 
