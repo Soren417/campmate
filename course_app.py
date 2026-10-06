@@ -3,6 +3,26 @@ import os
 
 DATA_FILE = "my_courses.json"
 
+def score_to_gpa(score):
+    """把百分制分数换算成5分制绩点"""
+    if score < 60:
+        return 0
+    return (score - 50) / 10
+
+def calc_gpa(courses):
+    """算加权平均学分绩点（GPA）"""
+    total_points = 0
+    total_credits = 0
+    for c in courses:
+        grade = c.get("grade")
+        if grade is not None:
+            point = score_to_gpa(grade)
+            total_points += point * c["credits"]
+            total_credits += c["credits"]
+    if total_credits == 0:
+            return 0
+    return total_points / total_credits
+
 def show_courses(courses):
     """打印课表"""
     if len(courses) == 0:
@@ -27,18 +47,16 @@ if os.path.exists(DATA_FILE):
 else:
     courses = []
 
-print("读到的数据：", courses)
-print("课程数量：", len(courses))
-
 while True:
     print("===== 我的课表 =====")
     print("  1. 查看课表")
     print("  2. 添加课程")
     print("  3. 删除课程")
-    print("  4. 退出")
-    choice = input("请选择(1-4):")
+    print("  4. 查看GPA")
+    print("  5. 退出")
+    choice = input("请选择(1-5):")
 
-    if choice == "4":
+    if choice == "5":
         print("再见！")
         break
     if choice == "1":
@@ -66,3 +84,7 @@ while True:
                 
            else:
                 print("❌ 编号不存在") 
+
+    if choice == "4":
+        gpa = calc_gpa(courses)
+        print(f"📊 当前 GPA: {gpa:.2f}")

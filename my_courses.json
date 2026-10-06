@@ -7,5 +7,10 @@
         "name": "大学英语",
         "credits": 2,
         "grade": 90
+    },
+    {
+        "name": "大学物理",
+        "credits": 3,
+        "grade": 86
     }
 ]
