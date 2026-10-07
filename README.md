@@ -15,8 +15,8 @@
 - Python 3 (3.14)
 
 ## 怎么运行
-- 运行：`python courses_app.py`
+- 运行：`python course_app.py`
 
 ## 项目结构
 - `course_app.py`—— 主程序
-- `my_course.json`——数据文件（程序运行时自动生产）
+- `my_courses.json`——数据文件（程序运行时自动生产）
