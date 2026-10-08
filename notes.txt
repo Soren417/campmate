@@ -1,1 +1,2 @@
 我的第一行数据
+[待修] 添加课程时输入非数字（如"周三"）会 ValueError 崩溃 → 见 Issue #1（try/except，排到 W6）
