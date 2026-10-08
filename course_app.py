@@ -1,6 +1,9 @@
 import json
 import os
 
+WEEK = ["周一", "周二", "周三", "周四", "周五", "周六", "周日"]
+
+
 DATA_FILE = "my_courses.json"
 
 def score_to_gpa(score):
@@ -32,7 +35,12 @@ def show_courses(courses):
     print(f"📚 当前课表（共 {len(courses)} 门）：")
     for i, c in enumerate(courses, 1):
            grade = c.get("grade", "未录入")
-           print(f"  {i}. {c['name']} —— {c['credits']} 学分，{grade} 分") 
+           wd = c.get("weekday")
+           if wd is None:
+               when = "未安排"
+           else:
+               when = f"{WEEK[wd - 1]} {c.get('period_start')}-{c.get('period_end')} 节"
+           print(f"  {i}. {c['name']} —— {c['credits']} 学分，{grade} 分 {when}") 
 
 def save_courses(courses):
     """保存课表到文件"""
@@ -66,8 +74,10 @@ while True:
         name = input("课程名称：")
         credit = int(input("学分："))
         grade = int(input("成绩："))
-
-        courses.append({"name": name, "credits": credit, "grade": grade})
+        wd = int(input("星期几(1=周一 … 7=周日)："))
+        ps = int(input("第几节开始："))
+        pe = int(input("第几节结束："))
+        courses.append({"name": name, "credits": credit, "grade": grade, "weekday": wd, "period_start": ps, "period_end": pe,})
         save_courses(courses)
         print(f"✅ 已添加：{name}  {credit} 学分）")
     

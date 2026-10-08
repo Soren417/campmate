@@ -1,16 +1,30 @@
 [
     {
         "name": "C语言",
-        "credits": 3
+        "credits": 3,
+        "weekday": 1,
+        "period_start": 3,
+        "period_end": 4
     },
     {
         "name": "大学英语",
         "credits": 2,
-        "grade": 90
+        "grade": 90,
+        "weekday": 3,
+        "period_start": 8,
+        "period_end": 9
     },
     {
         "name": "大学物理",
         "credits": 3,
         "grade": 86
+    },
+    {
+        "name": "高等数学",
+        "credits": 4,
+        "grade": 88,
+        "weekday": 3,
+        "period_start": 6,
+        "period_end": 7
     }
 ]
