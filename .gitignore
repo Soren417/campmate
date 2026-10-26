@@ -1,0 +1,12 @@
+# Python 字节码缓存（每次运行自动生成，不该进仓库）
+__pycache__/
+*.pyc
+*.pyo
+
+# 编辑器配置（因人而异）
+.vscode/
+
+# 备份与临时文件
+*.bak
+*.tmp
+notes_backup*
