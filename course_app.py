@@ -47,6 +47,25 @@ def save_courses(courses):
     with open(DATA_FILE, "w", encoding="utf-8") as f:
         json.dump(courses, f, ensure_ascii=False, indent=4)
 
+def ask_number(prompt, kind=float, allow_empty=False, lo=None, hi=None):
+    """一直问，直到输进来一个能用的数字；allow_empty 时空回车返回 None"""
+    while True:
+        s = input(prompt)
+        if allow_empty and s.strip() == "":
+            return None
+        try:
+            v = kind(s)
+        except ValueError:
+            print("这里得输数字，再来一次")
+            continue
+        if lo is not None and v < lo:
+            print(f"不能小于 {lo}")
+            continue
+        if hi is not None and v > hi:
+            print(f"不能大于 {hi}")
+            continue
+        return v
+
 
 if os.path.exists(DATA_FILE):
     with open(DATA_FILE, "r", encoding="utf-8") as f :
@@ -72,11 +91,11 @@ while True:
 
     if choice == "2":
         name = input("课程名称：")
-        credit = int(input("学分："))
-        grade = int(input("成绩："))
-        wd = int(input("星期几(1=周一 … 7=周日)："))
-        ps = int(input("第几节开始："))
-        pe = int(input("第几节结束："))
+        credit = ask_number("学分：")
+        grade = ask_number("成绩：", int, allow_empty=True)
+        wd = ask_number("星期几(1=周一 … 7=周日)：",int, lo=1, hi=7)
+        ps = ask_number("第几节开始：",int, lo=1, hi=12)
+        pe = ask_number("第几节结束：",int, lo=ps, hi=12)
         courses.append({"name": name, "credits": credit, "grade": grade, "weekday": wd, "period_start": ps, "period_end": pe,})
         save_courses(courses)
         print(f"✅ 已添加：{name}  {credit} 学分）")
@@ -86,14 +105,12 @@ while True:
             print("课表是空的，没有可删的课")
         else:
            show_courses(courses)
-           num = int(input("请输入要删除的编号："))
-           if 1 <= num <= len(courses):
-                removed = courses.pop(num - 1)
-                print(f"🗑️ 已删除：{removed['name']}")
-                save_courses(courses)
+           num = ask_number("请输入要删除的编号：",int,lo=1,hi=len(courses))
+           removed = courses.pop(num - 1)
+           print(f"🗑️ 已删除：{removed['name']}")
+           save_courses(courses)
                 
-           else:
-                print("❌ 编号不存在") 
+           
 
     if choice == "4":
         gpa = calc_gpa(courses)
