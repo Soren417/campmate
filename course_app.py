@@ -1,16 +1,23 @@
+import csv
 import json
 import os
+import sys
+
+# 让输出永远走 UTF-8：GBK 控制台里的 emoji 会把程序搞崩
+sys.stdout.reconfigure(encoding="utf-8")
 
 WEEK = ["周一", "周二", "周三", "周四", "周五", "周六", "周日"]
 
 
 DATA_FILE = "my_courses.json"
 
+
 def score_to_gpa(score):
     """把百分制分数换算成5分制绩点"""
     if score < 60:
         return 0
     return (score - 50) / 10
+
 
 def calc_gpa(courses):
     """算加权平均学分绩点（GPA）"""
@@ -23,8 +30,9 @@ def calc_gpa(courses):
             total_points += point * c["credits"]
             total_credits += c["credits"]
     if total_credits == 0:
-            return 0
+        return 0
     return total_points / total_credits
+
 
 def show_courses(courses):
     """打印课表"""
@@ -34,18 +42,20 @@ def show_courses(courses):
 
     print(f"📚 当前课表（共 {len(courses)} 门）：")
     for i, c in enumerate(courses, 1):
-           grade = c.get("grade", "未录入")
-           wd = c.get("weekday")
-           if wd is None:
-               when = "未安排"
-           else:
-               when = f"{WEEK[wd - 1]} {c.get('period_start')}-{c.get('period_end')} 节"
-           print(f"  {i}. {c['name']} —— {c['credits']} 学分，{grade} 分 {when}") 
+            grade = c.get("grade", "未录入")
+            wd = c.get("weekday")
+            if wd is None:
+                when = "未安排"
+            else:
+                when = f"{WEEK[wd - 1]} {c.get('period_start')}-{c.get('period_end')} 节"
+            print(f"  {i}. {c['name']} —— {c['credits']} 学分，{grade} 分 {when}")
+
 
 def save_courses(courses):
     """保存课表到文件"""
     with open(DATA_FILE, "w", encoding="utf-8") as f:
         json.dump(courses, f, ensure_ascii=False, indent=4)
+
 
 def ask_number(prompt, kind=float, allow_empty=False, lo=None, hi=None):
     """一直问，直到输进来一个能用的数字；allow_empty 时空回车返回 None"""
@@ -67,8 +77,23 @@ def ask_number(prompt, kind=float, allow_empty=False, lo=None, hi=None):
         return v
 
 
+def export_csv(courses):
+    """把课表导出成 CSV，Excel 能直接打开"""
+    if len(courses) == 0:
+        print("课表是空的，没什么可导出的")
+        return
+    with open("courses.csv", "w", encoding="utf-8-sig", newline="") as f:
+        w = csv.writer(f)
+        w.writerow(["课程", "学分", "成绩", "星期", "开始节", "结束节"])
+        for c in courses:
+            wd = c.get("weekday")
+            week = WEEK[wd - 1] if wd else "未安排"
+            w.writerow([c["name"], c["credits"], c.get("grade", ""), week,
+                        c.get("period_start", ""), c.get("period_end", "")])
+    print(f"✅ 已导出 {len(courses)} 门课 → courses.csv")
+
 if os.path.exists(DATA_FILE):
-    with open(DATA_FILE, "r", encoding="utf-8") as f :
+    with open(DATA_FILE, "r", encoding="utf-8") as f:
         courses = json.load(f)
 
 else:
@@ -81,7 +106,8 @@ while True:
     print("  3. 删除课程")
     print("  4. 查看GPA")
     print("  5. 退出")
-    choice = input("请选择(1-5):")
+    print("  6. 导出CSV")
+    choice = input("请选择(1-6):")
 
     if choice == "5":
         print("再见！")
@@ -93,25 +119,28 @@ while True:
         name = input("课程名称：")
         credit = ask_number("学分：")
         grade = ask_number("成绩：", int, allow_empty=True)
-        wd = ask_number("星期几(1=周一 … 7=周日)：",int, lo=1, hi=7)
-        ps = ask_number("第几节开始：",int, lo=1, hi=12)
-        pe = ask_number("第几节结束：",int, lo=ps, hi=12)
+        wd = ask_number("星期几(1=周一 … 7=周日)：", int, lo=1, hi=7)
+        ps = ask_number("第几节开始：", int, lo=1, hi=12)
+        pe = ask_number("第几节结束：", int, lo=ps, hi=12)
         courses.append({"name": name, "credits": credit, "grade": grade, "weekday": wd, "period_start": ps, "period_end": pe,})
         save_courses(courses)
-        print(f"✅ 已添加：{name}  {credit} 学分）")
-    
+        print(f"✅ 已添加：{name}  {credit} 学分")
+
     if choice == "3":
         if len(courses) == 0:
             print("课表是空的，没有可删的课")
         else:
-           show_courses(courses)
-           num = ask_number("请输入要删除的编号：",int,lo=1,hi=len(courses))
-           removed = courses.pop(num - 1)
-           print(f"🗑️ 已删除：{removed['name']}")
-           save_courses(courses)
-                
-           
+            show_courses(courses)
+            num = ask_number("请输入要删除的编号：", int,lo=1,hi=len(courses))
+            removed = courses.pop(num - 1)
+            print(f"🗑️ 已删除：{removed['name']}")
+            save_courses(courses)
+
+
 
     if choice == "4":
         gpa = calc_gpa(courses)
         print(f"📊 当前 GPA: {gpa:.2f}")
+
+    if choice == "6":
+        export_csv(courses)
